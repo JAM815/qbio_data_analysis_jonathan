@@ -175,6 +175,3 @@ clinic$age_category = ifelse(age_clinical < 40, "Young", ifelse(age_clinical >= 
 # From here we use the TCGAanalyze_survival function to generate the Kaplan Meier Plot.
 
 TCGAanalyze_survival(clinic, "age_category")
-
-# Note: FULL DISCLOSURE I am not sure if this works on the cluster. It has not been tested but when comparing
-# it to other code from the clinic, it should work.
