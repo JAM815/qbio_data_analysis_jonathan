@@ -172,16 +172,9 @@ names(clinic)[names(clinic) == "days_to_last_followup"] = "days_to_last_follow_u
 age_clinical = clinic$age_at_initial_pathologic_diagnosis
 clinic$age_category = ifelse(age_clinical < 40, "Young", ifelse(age_clinical >= 60, "Old", "Mid"))
 
-# We conduct the same process but for the subtypes variable.
-
-subtypes <- TCGAquery_subtype(tumor = "BRCA")
-age_subs = subtypes$age_at_initial_pathologic_diagnosis
-subtypes$age_category = ifelse(age_subs < 40, "Young", ifelse(age_subs >= 60, "Old", "Mid"))
-
 # From here we use the TCGAanalyze_survival function to generate the Kaplan Meier Plot.
 
-TCGAanalyze_survival(clinic, "ethnicity", filename="./survival_curves/survival_ethnicity.pdf")
-TCGAanalyze_survival(clinic, "menopause_status", filename="./survival_curves/survival_menopause.pdf")
-TCGAanalyze_survival(clinic, "breast_carcinoma_progesterone_receptor_status",   filename="./survival_curves/survival_progesterone.pdf")
+TCGAanalyze_survival(clinic, "age_category")
+
 # Note: FULL DISCLOSURE I am not sure if this works on the cluster. It has not been tested but when comparing
 # it to other code from the clinic, it should work.
