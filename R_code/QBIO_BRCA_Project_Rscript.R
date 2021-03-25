@@ -159,30 +159,29 @@ boxplot(GATA3_counts_log~age_category, data = patient_data, main = "Boxplot of H
 dev.off()
 # If running the data locally, comment the "dev.off()" and "jpeg("gene_log_counts_by_age_jpg)" lines
 
+# From here, we decided that we wanted to see the survival rates of each of age groups. 
+# We start off by trying to access the data.
 
 clin_query <- GDCquery(project = "TCGA-BRCA", data.category="Clinical", barcode=barcodes_clinic)
 GDCdownload( clin_query ) #only need this command once. This downloads the files onto your system.
 clinic <- GDCprepare_clinic(clin_query, clinical.info="patient")
 names(clinic)[names(clinic) == "days_to_last_followup"] = "days_to_last_follow_up" #fixes an error in the name of the column
 
+# From here we again categorize the patients by age.
+
 age_clinical = clinic$age_at_initial_pathologic_diagnosis
 clinic$age_category = ifelse(age_clinical < 40, "Young", ifelse(age_clinical >= 60, "Old", "Mid"))
 
+# We conduct the same process but for the subtypes variable.
 
 subtypes <- TCGAquery_subtype(tumor = "BRCA")
 age_subs = subtypes$age_at_initial_pathologic_diagnosis
-#also add the age category to the subtypes information
 subtypes$age_category = ifelse(age_subs < 40, "Young", ifelse(age_subs >= 60, "Old", "Mid"))
 
-
-#modify to your desired file path and name to save the figure. 
-#On the cluster use ls and rsync to find the file and copy to your local
-
-#TCGAanalyze_survival(clinic, "ethnicity")
-#TCGAanalyze_survival(clinic, "menopause_status")
-#TCGAanalyze_survival(clinic, "breast_carcinoma_progesterone_receptor_status")
+# From here we use the TCGAanalyze_survival function to generate the Kaplan Meier Plot.
 
 TCGAanalyze_survival(clinic, "ethnicity", filename="./survival_curves/survival_ethnicity.pdf")
 TCGAanalyze_survival(clinic, "menopause_status", filename="./survival_curves/survival_menopause.pdf")
 TCGAanalyze_survival(clinic, "breast_carcinoma_progesterone_receptor_status",   filename="./survival_curves/survival_progesterone.pdf")
-```
+# Note: FULL DISCLOSURE I am not sure if this works on the cluster. It has not been tested but when comparing
+# it to other code from the clinic, it should work.
